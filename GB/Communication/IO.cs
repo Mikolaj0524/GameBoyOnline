@@ -15,12 +15,12 @@ namespace GB.Communication
 		public SerialPort SerialPort = new();
 		public WaveRAM WaveRam = new();
 		public PPU Ppu = new();
-		public BUS Bus = new();
+		public BUS Bus;
 		public DMA Dma = new();
 		public IORegisters Registers = new();
 
-		public IO() {
-
+		public IO(BUS bus) {
+			Bus = bus;
 		}
 
 		public byte Read8(ushort address)
@@ -104,6 +104,11 @@ namespace GB.Communication
 			}
 
 			Console.WriteLine($"[IO] Unable to find destination, address: 0x{address:X4}");
+		}
+
+		public void Step(int cycles)
+		{
+			
 		}
 	}
 }

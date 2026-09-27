@@ -16,17 +16,21 @@ namespace GB.Communication
 		public OAM Oam = new();
 		public InterruptController InterruptController = new();
 
+		public ulong CycleCount;
+
 		public BUS()
 		{
-			Cpu = new CPU.CPU();
-			IO = new IO();
+			Cpu = new CPU.CPU(this);
+			IO = new IO(this);
 		}
 
 		public byte Read8(ushort address) {
+			Tick(4);
 			return ReadDirect8(address);
 		}
 
 		public void Write8(ushort address, byte value) {
+			Tick(4);
 			WriteDirect8(address, value);
 		}
 
@@ -152,6 +156,11 @@ namespace GB.Communication
 			Write8((ushort)(address + 1), (byte)(value >> 8));
 		}
 
+		public void Tick(int tCycles = 4)
+		{
+			CycleCount += (ulong)tCycles;
+			IO.Step(tCycles);
+		}
 
 		public void SetCartridge(byte[] rom) => Cartridge = new Cartridge(rom);
 		public void SetBios(byte[] bios) => Bios = new BIOS(bios);
