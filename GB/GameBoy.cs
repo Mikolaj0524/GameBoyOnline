@@ -1,6 +1,6 @@
 ﻿namespace GB
 {
-	internal class Program
+	internal class GameBoy
 	{
 		static void Main(string[] args)
 		{
