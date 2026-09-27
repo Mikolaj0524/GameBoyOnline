@@ -152,6 +152,7 @@ namespace GB.Communication
 			Write8((ushort)(address + 1), (byte)(value >> 8));
 		}
 
+
 		public void SetCartridge(byte[] rom) => Cartridge = new Cartridge(rom);
 		public void SetBios(byte[] bios) => Bios = new BIOS(bios);
 	}

@@ -1,17 +1,109 @@
-﻿using GB.Interfaces;
+﻿using GB.Audio;
+using GB.Controls;
+using GB.GPU;
+using GB.Interfaces;
+using GB.Memory;
 
 namespace GB.Communication
 {
 	public class IO : IRWInterface
 	{
+		public Screen Screen = new();
+		public Timers.Timer Timer = new();
+		public Joypad Joypad = new();
+		public APU Apu = new();
+		public SerialPort SerialPort = new();
+		public WaveRAM WaveRam = new();
+		public PPU Ppu = new();
+		public BUS Bus = new();
+		public DMA Dma = new();
+		public IORegisters Registers = new();
+
+		public IO() {
+
+		}
+
 		public byte Read8(ushort address)
 		{
-			return 0x00;
+			if (address == 0xFF0F)
+				return Bus.InterruptController.IF;
+
+			if (address == 0xFF00)
+				return Joypad.Read8(address);
+
+			if (address >= 0xFF01 && address <= 0xFF02)
+				return SerialPort.Read8(address);
+
+			if (address >= 0xFF04 && address <= 0xFF07)
+				return Timer.Read8(address);
+
+			if (address >= 0xFF10 && address <= 0xFF26)
+				return Apu.Read8(address);
+
+			if (address >= 0xFF30 && address <= 0xFF3F)
+				return WaveRam.Read8(address);
+
+			if (address >= 0xFF40 && address <= 0xFF4B)
+				return Screen.Read8(address);
+
+			if (address >= 0xFF4D && address <= 0xFF70)
+				return Registers.Read8(address);
+
+			Console.WriteLine($"[IO] Unable to find destination, address: 0x{address:X4}");
+			return 0xFF;
 		}
 
 		public void Write8(ushort address, byte value)
 		{
+			if (address == 0xFF0F)
+			{
+				Bus.InterruptController.IF = value;
+				return;
+			}
 
+			if (address == 0xFF00)
+			{
+				Joypad.Write8(address, value);
+				return;
+			}
+
+			if (address >= 0xFF01 && address <= 0xFF02)
+			{
+				SerialPort.Write8(address, value);
+				return;
+			}
+
+			if (address >= 0xFF04 && address <= 0xFF07)
+			{
+				Timer.Write8(address, value);
+				return;
+			}
+
+			if (address >= 0xFF10 && address <= 0xFF26)
+			{
+				Apu.Write8(address, value);
+				return;
+			}
+
+			if (address >= 0xFF30 && address <= 0xFF3F)
+			{
+				WaveRam.Write8(address, value);
+				return;
+			}
+
+			if (address >= 0xFF40 && address <= 0xFF4B)
+			{
+				Screen.Write8(address, value);
+				return;
+			}
+
+			if (address >= 0xFF4D && address <= 0xFF70)
+			{
+				Registers.Write8(address, value);
+				return;
+			}
+
+			Console.WriteLine($"[IO] Unable to find destination, address: 0x{address:X4}");
 		}
 	}
 }

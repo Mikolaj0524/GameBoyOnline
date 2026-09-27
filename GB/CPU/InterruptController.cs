@@ -2,6 +2,6 @@
 {
 	public class InterruptController
 	{
-		public byte IE, IF;	
+		public byte IE, IF;
 	}
 }
