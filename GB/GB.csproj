@@ -7,4 +7,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Audio\" />
+    <Folder Include="Communication\" />
+    <Folder Include="Controls\" />
+    <Folder Include="CPU\" />
+    <Folder Include="GPU\" />
+    <Folder Include="Interfaces\" />
+    <Folder Include="Memory\" />
+    <Folder Include="Utils\" />
+    <Folder Include="Timers\" />
+  </ItemGroup>
+
 </Project>
