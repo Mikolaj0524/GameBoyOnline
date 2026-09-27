@@ -1,4 +1,5 @@
-﻿using GB.Interfaces;
+﻿using GB.CPU;
+using GB.Interfaces;
 using GB.Memory;
 
 namespace GB.Communication
@@ -13,6 +14,7 @@ namespace GB.Communication
 		public HRAM HRam = new();
 		public WRAM WRam = new();
 		public OAM Oam = new();
+		public InterruptController InterruptController = new();
 
 		public BUS()
 		{
@@ -61,6 +63,9 @@ namespace GB.Communication
 
 			if (address >= 0xFF00 && address <= 0xFF7F)
 				return IO.Read8(address);
+
+			if (address == 0xFFFF)
+				return InterruptController.IE;
 
 			throw new NotImplementedException($"[BUS] Unimplemented Read8 address: 0x{address:X4}");
 		}
@@ -114,6 +119,12 @@ namespace GB.Communication
 			if (address >= 0xFF00 && address <= 0xFF7F)
 			{
 				IO.Write8(address, value);
+				return;
+			}
+
+			if (address == 0xFFFF)
+			{
+				InterruptController.IE = value;
 				return;
 			}
 
