@@ -30,11 +30,12 @@ namespace GB.Communication
 			WriteDirect8(address, value);
 		}
 
-		public byte ReadDirect8(ushort address) {
+		public byte ReadDirect8(ushort address)
+		{
 			if (address == 0xFF4D)
 				return 0xFF;
 
-			if (address <= 0x00FF)
+			if (address <= 0x00FF && Bios?.Enabled == true)
 				return Bios?.Read8(address) ?? 0xFF;
 
 			if (address <= 0x7FFF)
@@ -70,9 +71,16 @@ namespace GB.Communication
 			throw new NotImplementedException($"[BUS] Unimplemented Read8 address: 0x{address:X4}");
 		}
 
-		public void WriteDirect8(ushort address, byte value){
+		public void WriteDirect8(ushort address, byte value)
+		{
 			if (address == 0xFF4D)
 				return;
+
+			if (address == 0xFF50)
+			{
+				Bios?.Enabled = false;
+				return;
+			}
 
 			if (address <= 0x7FFF)
 			{
@@ -130,5 +138,21 @@ namespace GB.Communication
 
 			throw new NotImplementedException($"[BUS] Unimplemented Write8 address: 0x{address:X4}, Value: 0x{value:X2}");
 		}
+
+		public ushort Read16(ushort address)
+		{
+			byte low = Read8(address);
+			byte high = Read8((ushort)(address + 1));
+			return (ushort)(low | (high << 8));
+		}
+
+		public void Write16(ushort address, ushort value)
+		{
+			Write8(address, (byte)value);
+			Write8((ushort)(address + 1), (byte)(value >> 8));
+		}
+
+		public void SetCartridge(byte[] rom) => Cartridge = new Cartridge(rom);
+		public void SetBios(byte[] bios) => Bios = new BIOS(bios);
 	}
 }
