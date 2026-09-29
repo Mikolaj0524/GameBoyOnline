@@ -1,5 +1,6 @@
 ﻿using GB.Audio;
 using GB.Controls;
+using GB.CPU;
 using GB.GPU;
 using GB.Interfaces;
 using GB.Memory;
@@ -16,12 +17,13 @@ namespace GB.Communication
 		public WaveRAM WaveRam = new();
 		public PPU Ppu = new();
 		public BUS Bus;
-		public DMA Dma = new();
+		public DMA Dma;
 		public IORegisters Registers = new();
 
 		public IO(BUS bus) {
 			Bus = bus;
 
+			Joypad.RequestInterrupt = () => Bus.InterruptController.SetInterrupt(Interrupt.Joypad);
 			Timer = new Timers.Timer(bus.InterruptController);
 
 		}

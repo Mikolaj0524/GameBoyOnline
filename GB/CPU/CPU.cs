@@ -28,6 +28,12 @@ namespace GB.CPU
 			if (Stopped)
 			{
 				Bus.Tick(4);
+				Joypad jp = Bus.IO.Joypad;
+				if (jp.AnyPressed())
+				{
+					Stopped = false;
+					jp.ClearAny();
+				}
 				return 4;
 			}
 
