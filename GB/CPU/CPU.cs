@@ -1,4 +1,5 @@
 ﻿using GB.Communication;
+using GB.Controls;
 
 namespace GB.CPU
 {
@@ -24,12 +25,20 @@ namespace GB.CPU
 		{
 			ulong cycles = Bus.CycleCount;
 
+			byte pending = _interruptContoller.Pending();
+			if (Halted && pending != 0)
+				Halted = false;
+
+			if (_interruptContoller.HandleInterrupts(Registers, Bus))
+				return (int)(Bus.CycleCount - cycles);
+
 			byte opcode = Bus.Read8(Registers.PC);
 			Registers.PC++;
 
 			_instructions.Execute(opcode);
 
-			return (int)cycles;
+			return (int)(Bus.CycleCount - cycles);
 		}
+
 	}
 }
