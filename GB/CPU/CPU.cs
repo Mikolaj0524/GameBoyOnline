@@ -36,9 +36,18 @@ namespace GB.CPU
 			Registers.PC++;
 
 			_instructions.Execute(opcode);
+			UpdateIme();
 
 			return (int)(Bus.CycleCount - cycles);
 		}
 
+		private void UpdateIme() {
+			if (ImeDelay > 0)
+			{
+				ImeDelay--;
+				if (ImeDelay == 0)
+					Registers.IME = true;
+			}
+		}
 	}
 }
