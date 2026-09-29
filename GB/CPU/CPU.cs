@@ -25,12 +25,24 @@ namespace GB.CPU
 		{
 			ulong cycles = Bus.CycleCount;
 
+			if (Stopped)
+			{
+				Bus.Tick(4);
+				return 4;
+			}
+
 			byte pending = _interruptContoller.Pending();
 			if (Halted && pending != 0)
 				Halted = false;
 
 			if (_interruptContoller.HandleInterrupts(Registers, Bus))
 				return (int)(Bus.CycleCount - cycles);
+
+			if (Halted)
+			{
+				Bus.Tick(4);
+				return 4;
+			}
 
 			byte opcode = Bus.Read8(Registers.PC);
 			Registers.PC++;
