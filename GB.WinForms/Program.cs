@@ -1,17 +1,35 @@
+using System.Runtime.InteropServices;
+
 namespace GB.WinForms
 {
 	internal static class Program
 	{
-		/// <summary>
-		///  The main entry point for the application.
-		/// </summary>
+		[DllImport("kernel32.dll", SetLastError = true)]
+		private static extern bool AllocConsole();
+
 		[STAThread]
 		static void Main()
 		{
-			// To customize application configuration such as set high DPI settings or default font,
-			// see https://aka.ms/applicationconfiguration.
+			AllocConsole();
 			ApplicationConfiguration.Initialize();
-			Application.Run(new Form1());
+
+			GameBoy gameBoy = new();
+			byte[] bios = File.ReadAllBytes("bios.gb");
+
+			gameBoy.SetBios(bios);
+
+			byte[] rom = File.ReadAllBytes("tetris.gb");
+			gameBoy.SetCartridge(rom);
+
+			var window = new Form1();
+
+			if (!gameBoy.Run())
+			{
+				Application.Exit();
+				return;
+			}
+
+			Application.Run(window);
 		}
 	}
 }
