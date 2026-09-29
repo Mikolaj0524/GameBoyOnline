@@ -26,6 +26,7 @@ namespace GB.Communication
 			Joypad.RequestInterrupt = () => Bus.InterruptController.SetInterrupt(Interrupt.Joypad);
 			Timer = new Timers.Timer(bus.InterruptController);
 
+			Dma = new DMA(bus);
 		}
 
 		public byte Read8(ushort address)
@@ -63,6 +64,12 @@ namespace GB.Communication
 			if (address == 0xFF0F)
 			{
 				Bus.InterruptController.IF = value;
+				return;
+			}
+
+			if (address == 0xFF46)
+			{
+				Dma.Transfer(value);
 				return;
 			}
 

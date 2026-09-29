@@ -18,7 +18,7 @@ namespace GB.WinForms
 
 			gameBoy.SetBios(bios);
 
-			byte[] rom = File.ReadAllBytes("test.gb");
+			byte[] rom = File.ReadAllBytes("tests.gb");
 			gameBoy.SetCartridge(rom);
 
 			var window = new Form1();
