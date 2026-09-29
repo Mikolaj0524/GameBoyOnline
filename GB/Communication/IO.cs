@@ -9,7 +9,7 @@ namespace GB.Communication
 	public class IO : IRWInterface
 	{
 		public Screen Screen = new();
-		public Timers.Timer Timer = new();
+		public Timers.Timer Timer;
 		public Joypad Joypad = new();
 		public APU Apu = new();
 		public SerialPort SerialPort = new();
@@ -21,6 +21,9 @@ namespace GB.Communication
 
 		public IO(BUS bus) {
 			Bus = bus;
+
+			Timer = new Timers.Timer(bus.InterruptController);
+
 		}
 
 		public byte Read8(ushort address)
@@ -108,7 +111,7 @@ namespace GB.Communication
 
 		public void Step(int cycles)
 		{
-			
+			Timer.Step(cycles);
 		}
 	}
 }

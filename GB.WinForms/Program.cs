@@ -18,7 +18,7 @@ namespace GB.WinForms
 
 			gameBoy.SetBios(bios);
 
-			byte[] rom = File.ReadAllBytes("tetris.gb");
+			byte[] rom = File.ReadAllBytes("test.gb");
 			gameBoy.SetCartridge(rom);
 
 			var window = new Form1();
