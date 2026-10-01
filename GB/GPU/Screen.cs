@@ -6,6 +6,13 @@ namespace GB.GPU
 	{
 		public byte Lcdc, Bgp, Scx, Scy, Obp0, Obp1, Wy, Wx, Stat, Ly, Lyc;
 
+		public byte[][] Palette = [
+			[155, 188, 15],
+			[139, 172, 15],
+			[48, 98, 48],
+			[15, 56, 15]
+		];
+
 		public byte Read8(ushort address) => address switch
 		{
 			0xFF40 => Lcdc,

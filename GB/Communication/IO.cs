@@ -27,6 +27,7 @@ namespace GB.Communication
 			Timer = new Timers.Timer(bus.InterruptController);
 
 			Dma = new DMA(bus);
+			Ppu = new PPU(this);
 		}
 
 		public byte Read8(ushort address)
@@ -121,6 +122,7 @@ namespace GB.Communication
 		public void Step(int cycles)
 		{
 			Timer.Step(cycles);
+			Ppu.Step(cycles);
 		}
 	}
 }

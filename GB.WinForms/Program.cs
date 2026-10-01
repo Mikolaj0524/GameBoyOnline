@@ -21,7 +21,7 @@ namespace GB.WinForms
 			byte[] rom = File.ReadAllBytes("tests.gb");
 			gameBoy.SetCartridge(rom);
 
-			var window = new Form1();
+			var window = new Form1(gameBoy);
 
 			if (!gameBoy.Run())
 			{
