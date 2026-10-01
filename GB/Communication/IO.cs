@@ -15,7 +15,7 @@ namespace GB.Communication
 		public APU Apu = new();
 		public SerialPort SerialPort = new();
 		public WaveRAM WaveRam = new();
-		public PPU Ppu = new();
+		public PPU Ppu;
 		public BUS Bus;
 		public DMA Dma;
 		public IORegisters Registers = new();
