@@ -48,6 +48,8 @@ namespace GB.WinForms
 				case Keys.Down: button = GB.Controls.Button.Down; break;
 				case Keys.Left: button = GB.Controls.Button.Left; break;
 				case Keys.Right: button = GB.Controls.Button.Right; break;
+				case Keys.D1: _gameBoy.Bus.IO.Screen.Contrast += 0.05f; break;
+				case Keys.D2: _gameBoy.Bus.IO.Screen.Contrast -= 0.05f; break;
 			}
 
 			if (button.HasValue)
