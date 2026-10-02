@@ -11,4 +11,12 @@
 	<ItemGroup>
 		<ProjectReference Include="..\GB\GB.csproj" />
 	</ItemGroup>
+
+	<Target Name="DeployWasm" AfterTargets="Publish">
+		<ItemGroup>
+			<FrameworkFiles Include="$(PublishDir)wwwroot\_framework\**\*" />
+		</ItemGroup>
+
+		<Copy SourceFiles="@(FrameworkFiles)" DestinationFiles="@(FrameworkFiles->'..\GB.Frontend\public\wasm\%(RecursiveDir)%(Filename)%(Extension)')" />
+	</Target>
 </Project>
