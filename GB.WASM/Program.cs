@@ -98,7 +98,7 @@ namespace GB.WASM
 		public static int GetFrameBufferPtr() => (int)PPU.GetFrameBufferPtr();
 
 		[JSExport]
-		public static int GetAudioBufferPtr() => (int)_audioPtr;
+		public static int GetAudioBufferPtr() => _audioPtr.ToInt32();
 
 		[JSExport]
 		public static int ReadAudioSamples()
