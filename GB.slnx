@@ -1,4 +1,6 @@
 <Solution>
-  <Project Path="GB.WinForms/GB.WinForms.csproj" />
-  <Project Path="GB/GB.csproj" />
+  	<Project Path="GB.WinForms/GB.WinForms.csproj" />
+	<Project Path="GB.WASM/GB.WASM.csproj" />
+	<Project Path="GB.Frontend/GB.Frontend.esproj" />
+	<Project Path="GB/GB.csproj" />
 </Solution>
