@@ -1,5 +1,6 @@
 ﻿using GB.Communication;
 using GB.Utils;
+using System.Runtime.InteropServices;
 
 namespace GB.GPU
 {
@@ -14,14 +15,21 @@ namespace GB.GPU
 		private bool _statInterrupt;
 
 		public Action<byte[]>? FrameReady;
-		private readonly byte[] _framebuffer = new byte[160 * 144 * 3];
 
+		private readonly byte[] _framebuffer = GC.AllocateArray<byte>(160 * 144 * 3, pinned: true);
+		private static PPU? _instance;
+		private readonly IntPtr _frameBufferPtr;
+
+		public static IntPtr GetFrameBufferPtr() => _instance?._frameBufferPtr ?? IntPtr.Zero;
 
 		public PPU(IO io)
 		{
 			_io = io;
 			_screen = io.Screen;
 			_bus = io.Bus;
+
+			_instance = this;
+			_frameBufferPtr = Marshal.UnsafeAddrOfPinnedArrayElement(_framebuffer, 0);
 		}
 
 		public void Step(int cycles)
