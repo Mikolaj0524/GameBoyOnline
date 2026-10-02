@@ -3,7 +3,7 @@
 	public class BIOS(byte[] bios)
 	{
 		private readonly byte[] _memory = bios;
-		public bool Enabled = false;
+		public bool Enabled = true;
 		public byte Read8(ushort address)
 		{
 			return _memory[address];
