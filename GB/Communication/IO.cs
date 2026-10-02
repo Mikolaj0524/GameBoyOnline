@@ -12,7 +12,7 @@ namespace GB.Communication
 		public Screen Screen = new();
 		public Timers.Timer Timer;
 		public Joypad Joypad = new();
-		public APU Apu = new();
+		public APU Apu;
 		public SerialPort SerialPort = new();
 		public WaveRAM WaveRam = new();
 		public PPU Ppu;
@@ -28,6 +28,7 @@ namespace GB.Communication
 
 			Dma = new DMA(bus);
 			Ppu = new PPU(this);
+			Apu = new APU(WaveRam);
 		}
 
 		public byte Read8(ushort address)
@@ -123,6 +124,7 @@ namespace GB.Communication
 		{
 			Timer.Step(cycles);
 			Ppu.Step(cycles);
+			Apu.Step(cycles);
 		}
 	}
 }

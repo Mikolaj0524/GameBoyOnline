@@ -27,11 +27,14 @@ namespace GB.WinForms
 
 			AdjustWindow();
 			InitFrame();
+			InitAudio();
 
 			KeyDown += OnKeyDown;
 			KeyUp += OnKeyUp;
+			FormClosing += OnFormClosing;
 		}
 
+		private void OnFormClosing(object? sender, FormClosingEventArgs e) => DisposeAudio();
 		private void OnKeyDown(object? sender, KeyEventArgs e) => UseButton(e, true);
 		private void OnKeyUp(object? sender, KeyEventArgs e) => UseButton(e, false);
 
@@ -110,5 +113,43 @@ namespace GB.WinForms
 			_gameBoy.Bus.IO.Ppu.FrameReady = fb => UpdateFrame(fb);
 		}
 
+		private void InitAudio()
+		{
+			_waveOut = new WaveOut()
+			{
+				BufferMilliseconds = 60,
+				NumberOfBuffers = 3
+			};
+
+			_waveOut.Init(new BufferAdapter(_gameBoy.Bus.IO.Apu.OutputBuffer));
+			_waveOut.Play();
+		}
+
+		private void DisposeAudio()
+		{
+			_waveOut?.Stop();
+			_waveOut?.Dispose();
+		}
+
+		private class BufferAdapter : ISampleProvider
+		{
+			private readonly Audio.AudioBuffer _audioBuffer;
+			public WaveFormat WaveFormat { get; }
+
+			public BufferAdapter(Audio.AudioBuffer audioBuffer, int sampleRate = APU.SAMPLE_RATE)
+			{
+				_audioBuffer = audioBuffer;
+				WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, 2);
+			}
+
+			public int Read(float[] buffer, int offset, int count) => _audioBuffer.Read(buffer, offset, count);
+			public int Read(Span<float> buffer)
+			{
+				float[] temp = new float[buffer.Length];
+				int samples = _audioBuffer.Read(temp, 0, temp.Length);
+				temp.AsSpan(0, samples).CopyTo(buffer);
+				return samples;
+			}
+		}
 	}
 }

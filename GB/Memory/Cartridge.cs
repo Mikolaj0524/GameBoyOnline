@@ -43,7 +43,7 @@ namespace GB.Memory
 
 		public void Write8(ushort address, byte value)
 		{
-			
+
 		}
 
 
