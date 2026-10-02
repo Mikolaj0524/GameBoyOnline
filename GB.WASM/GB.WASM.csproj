@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+		<RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<RunAOTCompilation>true</RunAOTCompilation>
+		<InvariantGlobalization>true</InvariantGlobalization>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\GB\GB.csproj" />
+	</ItemGroup>
+</Project>
