@@ -2,22 +2,29 @@
 
 public partial class Instructions
 {
+	/// <summary>Loads one register into another.</summary>
 	private void LdRegReg(byte dest, byte src)
 	{
 		byte val = Read8(src);
 		Write8(dest, val);
 	}
 
+
+	/// <summary>Loads an immediate value into a register.</summary>
 	private void LdRegImm(byte index)
 	{
 		Write8(index, ReadPc8());
 	}
 
+
+	/// <summary>Loads an immediate value into memory at HL.</summary>
 	private void LdMemHlImm()
 	{
 		_bus.Write8(_registers.HL, ReadPc8());
 	}
 
+
+	/// <summary>Loads a value using a 16-bit register.</summary>
 	private void LdInd(byte group16, bool read)
 	{
 		ushort address = group16 switch
@@ -38,6 +45,8 @@ public partial class Instructions
 		_bus.Write8(address, _registers.A);
 	}
 
+
+	/// <summary>Loads A from or to an IO address.</summary>
 	private void Ldh(byte opcode)
 	{
 		ushort address = 0;
@@ -57,22 +66,30 @@ public partial class Instructions
 		_bus.Write8(address, _registers.A);
 	}
 
+
+	/// <summary>Loads an immediate value into a 16-bit register.</summary>
 	private void Ld16Imm(int index) {
 		Write16(index, ReadPc16());
 	}
 
+
+	/// <summary>Loads HL into SP.</summary>
 	private void LdSpHl()
 	{
 		_registers.SP = _registers.HL;
 		_bus.Tick(4);
 	}
 
+
+	/// <summary>Stores SP at a memory address.</summary>
 	private void LdA16Sp()
 	{
 		ushort address = ReadPc16();
 		_bus.Write16(address, _registers.SP);
 	}
 
+
+	/// <summary>Loads SP plus a signed value into HL.</summary>
 	private void LdHlSpE8()
 	{
 		byte rawVal = ReadPc8();
@@ -85,14 +102,17 @@ public partial class Instructions
 		_registers.HL = (ushort)(sp + (sbyte)rawVal);
 	}
 
+
+	/// <summary>Pushes a 16-bit register onto the stack.</summary>
 	private void PushGroup(int index)
 	{
 		_bus.Tick(4);
 		Push(ReadGroup16(index));
 	}
 
+
+	/// <summary>Pops a value from the stack into a 16-bit register.</summary>
 	private void PopGroup(int index) {
 		WriteGroup16(index, Pop());
 	}
-
 }

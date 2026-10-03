@@ -62,6 +62,9 @@ namespace GB.CPU.Instructions
 			}
 		}
 
+
+		/// <summary>Reads an 8-bit register.</summary>
+		/// <returns>Register value.</returns>
 		private byte Read8(byte index) => index switch
 		{
 			0 => _registers.B,
@@ -75,6 +78,8 @@ namespace GB.CPU.Instructions
 			_ => 0
 		};
 
+
+		/// <summary>Writes to an 8-bit register.</summary>
 		private void Write8(byte index, byte value)
 		{
 			switch (index)
@@ -90,6 +95,9 @@ namespace GB.CPU.Instructions
 			}
 		}
 
+
+		/// <summary>Reads a 16-bit register.</summary>
+		/// /// <returns>Register value.</returns>
 		private ushort Read16(int index) => index switch
 		{
 			0 => _registers.BC,
@@ -99,6 +107,8 @@ namespace GB.CPU.Instructions
 			_ => 0
 		};
 
+
+		/// <summary>Writes to a 16-bit register.</summary>
 		private void Write16(int index, ushort val)
 		{
 			switch (index)
@@ -110,6 +120,9 @@ namespace GB.CPU.Instructions
 			}
 		}
 
+
+		/// <summary>Reads a 16-bit register group.</summary>
+		/// <returns>Register value.</returns>
 		private ushort ReadGroup16(int index) => index switch
 		{
 			0 => _registers.BC,
@@ -119,6 +132,8 @@ namespace GB.CPU.Instructions
 			_ => 0
 		};
 
+
+		/// <summary>Writes to a 16-bit register group.</summary>
 		private void WriteGroup16(int index, ushort val)
 		{
 			switch (index)
@@ -130,6 +145,9 @@ namespace GB.CPU.Instructions
 			}
 		}
 
+
+		/// <summary>Reads the next byte from the program counter.</summary>
+		/// <returns>Read byte.</returns>
 		private byte ReadPc8()
 		{
 			byte val = _bus.Read8(_registers.PC);
@@ -137,12 +155,19 @@ namespace GB.CPU.Instructions
 			return val;
 		}
 
+
+		/// <summary>Reads the next 16-bit value from the program counter.</summary>
+		/// <returns>Read value.</returns>
 		private ushort ReadPc16()
 		{
 			ushort val = _bus.Read16(_registers.PC);
 			_registers.PC += 2;
 			return val;
 		}
+
+
+		/// <summary>Pushes a value onto the stack.</summary>
+		/// <param name="value">Value to push.</param>
 		private void Push(ushort value)
 		{
 			_registers.SP--;
@@ -150,6 +175,10 @@ namespace GB.CPU.Instructions
 			_registers.SP--;
 			_bus.Write8(_registers.SP, (byte)value);
 		}
+
+
+		/// <summary>Pops a value from the stack.</summary>
+		/// <returns>Popped value.</returns>
 		private ushort Pop()
 		{
 			byte low = _bus.Read8(_registers.SP);

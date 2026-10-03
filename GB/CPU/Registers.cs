@@ -4,8 +4,13 @@ namespace GB.CPU
 {
 	public class Registers
 	{
+		/// <summary>Stack and program counter.</summary>
 		public ushort SP, PC = 0x0000;
+
+		/// <summary>CPU registers.</summary>
 		public byte A, B, C, D, E, F, H, L;
+
+		/// <summary>Interrupt master enable</summary>
 		public bool IME;
 
 		public ushort AF
@@ -48,30 +53,35 @@ namespace GB.CPU
 			}
 		}
 
+		/// <summary>Zero flag</summary>
 		public bool z
 		{
 			get => F.IsBitSet(7);
 			set => F = value ? (byte)(F | 0b1000_0000) : (byte)(F & 0b0111_1111);
 		}
 
+		/// <summary>Subtract flag</summary>
 		public bool n
 		{
 			get => F.IsBitSet(6);
 			set => F = value ? (byte)(F | 0b0100_0000) : (byte)(F & 0b1011_1111);
 		}
 
+		/// <summary>Half-carry flag</summary>
 		public bool h
 		{
 			get => F.IsBitSet(5);
 			set => F = value ? (byte)(F | 0b0010_0000) : (byte)(F & 0b1101_1111);
 		}
 
+		/// <summary>Carry flag</summary>
 		public bool c
 		{
 			get => F.IsBitSet(4);
 			set => F = value ? (byte)(F | 0b0001_0000) : (byte)(F & 0b1110_1111);
 		}
 
+		/// <summary>Updates the CPU flags.</summary>
 		public void WriteFlags(bool? z, bool? n, bool? h, bool? c)
 		{
 			if (z != null)

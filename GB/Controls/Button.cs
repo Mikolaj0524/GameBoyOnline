@@ -1,5 +1,6 @@
 ﻿namespace GB.Controls
 {
+	/// <summary>Buttons enum</summary>
 	public enum Button
 	{
 		Right,

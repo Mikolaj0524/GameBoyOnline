@@ -31,6 +31,8 @@ namespace GB.Communication
 			Apu = new APU(WaveRam);
 		}
 
+
+		/// <summary>Reads from an I/O register.</summary>
 		public byte Read8(ushort address)
 		{
 			if (address == 0xFF0F)
@@ -61,6 +63,8 @@ namespace GB.Communication
 			return 0xFF;
 		}
 
+
+		/// <summary>Writes to an I/O register.</summary>
 		public void Write8(ushort address, byte value)
 		{
 			if (address == 0xFF0F)
@@ -120,6 +124,7 @@ namespace GB.Communication
 			Console.WriteLine($"[IO] Unable to find destination, address: 0x{address:X4}");
 		}
 
+		/// <summary>Runs steps in other components.</summary>
 		public void Step(int cycles)
 		{
 			Timer.Step(cycles);

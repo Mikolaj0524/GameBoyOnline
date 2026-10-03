@@ -4,6 +4,8 @@
 	{
 		private readonly BUS _bus = bus;
 
+
+		/// <summary>Transfers data to OAM.</summary>
 		public void Transfer(byte value)
 		{
 			ushort source = (ushort)(value << 8);

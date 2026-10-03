@@ -10,6 +10,9 @@ namespace GB
 		private Thread? _thread;
 		public bool _pause, _running;
 
+
+		/// <summary>Starts the emulator.</summary>
+		/// <returns>True if the emulator started successfully, false otherwise.</returns>
 		public bool Run()
 		{
 			if (_running)
@@ -33,14 +36,19 @@ namespace GB
 			_running = true;
 			_pause = false;
 
-			_thread = new Thread(ThreadLoop){ 
-				IsBackground = true 
-			};
+			if (!OperatingSystem.IsBrowser()) { 
+				_thread = new Thread(ThreadLoop){ 
+					IsBackground = true 
+				};
 
-			_thread.Start();
+				_thread.Start();
+			}
+
 			return true;
 		}
 
+
+		/// <summary>Keeps the Game Boy CPU synchronized with the target frequency.</summary>
 		public void ThreadLoop() {
 			Stopwatch stopwatch = Stopwatch.StartNew();
 			ulong executedCycles = 0;
@@ -66,6 +74,9 @@ namespace GB
 			}
 		}
 
+
+		/// <summary>Stops the emulator.</summary>
+		/// <returns>True if the emulator stopped successfully, false otherwise.</returns>
 		public bool Dispose()
 		{
 			if (!_running)
@@ -85,6 +96,8 @@ namespace GB
 			return true;
 		}
 
+
+		/// <summary>Runs the emulator for n cycles.</summary>
 		public void Step(int cycles)
 		{
 			if (!_running)
@@ -101,6 +114,9 @@ namespace GB
 			}
 		}
 
+
+		/// <summary>Pauses or resumes the emulator.</summary>
+		/// <returns>True if the pause state was changed successfully, false otherwise.</returns>
 		public bool Pause(bool state)
 		{
 			if (!_running)
@@ -113,7 +129,14 @@ namespace GB
 			return true;
 		}
 
+
+		/// <summary>Sets cartridge ROM.</summary>
+		/// <param name="rom">ROM data.</param>
 		public void SetCartridge(byte[] rom) => Bus.SetCartridge(rom);
+
+
+		/// <summary>Sets BIOS ROM.</summary>
+		/// <param name="rom">BIOS data.</param>
 		public void SetBios(byte[] rom) => Bus.SetBios(rom);
 	}
 }

@@ -11,6 +11,9 @@ namespace GB.Timers
 
 		private readonly InterruptController _interruptController = interruptController;
 
+
+		/// <summary>Reads a timer register.</summary>
+		/// <returns>Register value.</returns>
 		public byte Read8(ushort address) => address switch
 		{
 			0xFF04 => (byte)(_div >> 8),
@@ -20,6 +23,8 @@ namespace GB.Timers
 			_ => throw new NotImplementedException($"[TIMER] Unimplemented Read8 address: 0x{address:X4}")
 		};
 
+
+		/// <summary>Writes to a timer register.</summary>
 		public void Write8(ushort address, byte value)
 		{
 			switch (address)
@@ -43,6 +48,9 @@ namespace GB.Timers
 				default: throw new NotImplementedException($"[TIMER] Unimplemented Write8 address: 0x{address:X4}, Value: 0x{value:X2}");
 			}
 		}
+
+
+		/// <summary>Updates the timer.</summary>
 		public void Step(int cycles)
 		{
 			for (int i = 0; i < cycles; i++)
@@ -55,6 +63,9 @@ namespace GB.Timers
 			}
 		}
 
+
+		/// <summary>Gets current timer signal.</summary>
+		/// <returns>Returns True when timer signal is active.</returns>
 		private bool TimerSignal()
 		{
 			if (!_tac.IsBitSet(2))
@@ -71,6 +82,8 @@ namespace GB.Timers
 			return _div.IsBitSet(index);
 		}
 
+
+		/// <summary>Increments TIMA.</summary>
 		private void IncrementTima()
 		{
 			if (_tima == 0xFF)

@@ -24,16 +24,24 @@ namespace GB.Communication
 			IO = new IO(this);
 		}
 
+
+		/// <summary>Reads a byte from memory.</summary>
+		/// <returns>Read byte.</returns>
 		public byte Read8(ushort address) {
 			Tick(4);
 			return ReadDirect8(address);
 		}
 
+
+		/// <summary>Writes a byte to memory.</summary>
 		public void Write8(ushort address, byte value) {
 			Tick(4);
 			WriteDirect8(address, value);
 		}
 
+
+		/// <summary>Reads a byte without adding cycles.</summary>
+		/// <returns>Read byte.</returns>
 		public byte ReadDirect8(ushort address)
 		{
 			if (address == 0xFF4D)
@@ -75,6 +83,8 @@ namespace GB.Communication
 			throw new NotImplementedException($"[BUS] Unimplemented Read8 address: 0x{address:X4}");
 		}
 
+
+		/// <summary>Writes a byte without adding cycles.</summary>
 		public void WriteDirect8(ushort address, byte value)
 		{
 			if (address == 0xFF4D)
@@ -143,6 +153,9 @@ namespace GB.Communication
 			throw new NotImplementedException($"[BUS] Unimplemented Write8 address: 0x{address:X4}, Value: 0x{value:X2}");
 		}
 
+
+		/// <summary>Reads a 16-bit value from memory.</summary>
+		/// <returns>Read 16-bit value.</returns>
 		public ushort Read16(ushort address)
 		{
 			byte low = Read8(address);
@@ -150,19 +163,28 @@ namespace GB.Communication
 			return (ushort)(low | (high << 8));
 		}
 
+
+		/// <summary>Writes a 16-bit value to memory.</summary>
 		public void Write16(ushort address, ushort value)
 		{
 			Write8(address, (byte)value);
 			Write8((ushort)(address + 1), (byte)(value >> 8));
 		}
 
+
+		/// <summary>Advances the Game Boy hardware.</summary>
 		public void Tick(int tCycles = 4)
 		{
 			CycleCount += (ulong)tCycles;
 			IO.Step(tCycles);
 		}
 
+
+		/// <summary>Sets the cartridge ROM.</summary>
 		public void SetCartridge(byte[] rom) => Cartridge = new Cartridge(rom);
+
+
+		/// <summary>Sets the BIOS ROM.</summary>
 		public void SetBios(byte[] bios) => Bios = new BIOS(bios);
 	}
 }

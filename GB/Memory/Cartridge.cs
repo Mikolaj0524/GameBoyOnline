@@ -6,28 +6,36 @@ namespace GB.Memory
 {
 	public class Cartridge : IRWInterface
 	{
+		/// <summary>ROM data.</summary>
 		private readonly byte[] _rom;
+
+		/// <summary>RAM data.</summary>
 		private byte[]? _ram;
 
-		private byte _type, _romSize, _ramSize, _license, _rtcReg = 0;
-		private string _newLicense = "00";
-
-		// Numer mappera (0 = brak, 1/2/3/5/6/7), liczony raz w ReadHeader
+		/// <summary>MBC type.</summary>
 		private int _mbc = 0;
 
-		// MBC1: _romBank = dolne 5 bitów (1..31), _ramBank = górne 2 bity
+		// Memory and license variables
+		private byte _type, _romSize, _ramSize, _license, _rtcReg = 0;
+		private string _newLicense = "00";
 		private int _romBanks = 2, _ramBanks = 0, _romBank = 1, _ramBank = 0, _mode = 0;
 		private bool _ramEnabled = false;
 
+
+		// RTC variables
 		private byte _latchPrev = 0xFF;
 		private long _rtcTotal = 0;
 		private DateTime _rtcStamp = DateTime.UtcNow;
 		private bool _rtcHalt = false, _rtcCarry = false;
 		private byte _sec, _min, _hour, _dayLow, _dayHigh;
 
+		/// <summary>Cartridge title.</summary>
 		public string? Title;
+
+		/// <summary>Cartridge version.</summary>
 		public int Version;
 
+		/// <summary>Battery status.</summary>
 		public bool HasBattery { get; private set; }
 
 		public Cartridge(byte[] rom)
@@ -39,6 +47,8 @@ namespace GB.Memory
 			ReadHeader();
 		}
 
+
+		/// <summary>Reads the cartridge header.</summary>
 		private void ReadHeader()
 		{
 			Title = Encoding.ASCII.GetString(_rom, 0x0134, 16).TrimEnd('\0');
@@ -75,8 +85,13 @@ namespace GB.Memory
 				_ramEnabled = true;
 		}
 
+
+		/// <summary>Saves cartridge RAM.</summary>
+		/// <returns>RAM data.</returns>
 		public byte[]? SaveRam() => _ram == null ? null : (byte[])_ram.Clone();
 
+
+		/// <summary>Loads cartridge RAM.</summary>
 		public void LoadRam(byte[] data)
 		{
 			if (_ram == null || data == null)
@@ -85,6 +100,9 @@ namespace GB.Memory
 			Array.Copy(data, _ram, Math.Min(data.Length, _ram.Length));
 		}
 
+
+		/// <summary>Reads from the cartridge.</summary>
+		/// <returns>Read byte.</returns>
 		public byte Read8(ushort address)
 		{
 			if (address <= 0x3FFF)
@@ -99,6 +117,8 @@ namespace GB.Memory
 			return 0xFF;
 		}
 
+
+		/// <summary>Writes to the cartridge.</summary>
 		public void Write8(ushort address, byte value)
 		{
 			if (address >= 0xA000 && address <= 0xBFFF)
@@ -145,6 +165,8 @@ namespace GB.Memory
 			WriteModeLatch(value);
 		}
 
+
+		/// <summary>Reads from ROM bank 0.</summary>
 		private byte ReadLowRom(ushort address)
 		{
 			int bank = 0;
@@ -155,6 +177,8 @@ namespace GB.Memory
 			return offset < _rom.Length ? _rom[offset] : (byte)0xFF;
 		}
 
+
+		/// <summary>Reads from current ROM bank.</summary>
 		private byte ReadHighRom(ushort address)
 		{
 			int bank = _mbc == 1 ? ((_ramBank << 5) | _romBank) : _romBank;
@@ -164,12 +188,16 @@ namespace GB.Memory
 			return offset < _rom.Length ? _rom[offset] : (byte)0xFF;
 		}
 
+
+		/// <summary>Gets current RAM bank.</summary>
 		private int CurrentRamBank()
 		{
 			int bank = (_mbc == 1 && _mode == 0) ? 0 : _ramBank;
 			return _ramBanks > 0 ? bank % _ramBanks : 0;
 		}
 
+
+		/// <summary>Gets RAM offset.</summary>
 		private int RamOffset(ushort address)
 		{
 			int offset = (CurrentRamBank() * 0x2000) + (address - 0xA000);
@@ -179,6 +207,8 @@ namespace GB.Memory
 			return offset;
 		}
 
+
+		/// <summary>Reads from RAM.</summary>
 		private byte ReadRam(ushort address)
 		{
 			if (!_ramEnabled)
@@ -200,6 +230,8 @@ namespace GB.Memory
 			return offset < _ram.Length ? _ram[offset] : (byte)0xFF;
 		}
 
+
+		/// <summary>Writes to RAM.</summary>
 		private void WriteRam(ushort address, byte value)
 		{
 			if (!_ramEnabled)
@@ -225,6 +257,8 @@ namespace GB.Memory
 				_ram[offset] = value;
 		}
 
+
+		/// <summary>Toggles RAM.</summary>
 		private void WriteRamEnable(ushort address, byte value)
 		{
 			if (_mbc == 7)
@@ -236,6 +270,8 @@ namespace GB.Memory
 			_ramEnabled = (value & 0x0F) == 0x0A;
 		}
 
+
+		/// <summary>Changes ROM bank.</summary>
 		private void WriteRomBank(ushort address, byte value)
 		{
 			switch (_mbc)
@@ -268,6 +304,8 @@ namespace GB.Memory
 			}
 		}
 
+
+		/// <summary>Changes RAM bank.</summary>
 		private void WriteRamBank(ushort address, byte value)
 		{
 			switch (_mbc)
@@ -299,6 +337,8 @@ namespace GB.Memory
 			}
 		}
 
+
+		/// <summary>Changes MBC mode.</summary>
 		private void WriteModeLatch(byte value)
 		{
 			if (_mbc == 3)
@@ -314,6 +354,8 @@ namespace GB.Memory
 			}
 		}
 
+
+		/// <summary>Updates RTC.</summary>
 		private void UpdateRtc()
 		{
 			DateTime now = DateTime.UtcNow;
@@ -340,6 +382,8 @@ namespace GB.Memory
 			}
 		}
 
+
+		/// <summary>Saves current RTC values.</summary>
 		private void LatchRtc()
 		{
 			UpdateRtc();
@@ -352,6 +396,8 @@ namespace GB.Memory
 			_dayHigh = (byte)(((days >> 8) & 0x01) | (_rtcHalt ? 0x40 : 0) | (_rtcCarry ? 0x80 : 0));
 		}
 
+
+		/// <summary>Reads RTC.</summary>
 		private byte ReadRtc()
 		{
 			return _rtcReg switch
@@ -365,6 +411,8 @@ namespace GB.Memory
 			};
 		}
 
+
+		/// <summary>Writes to RTC.</summary>
 		private void WriteRtc(byte reg, byte value)
 		{
 			UpdateRtc();
@@ -392,6 +440,9 @@ namespace GB.Memory
 			_rtcStamp = DateTime.UtcNow;
 		}
 
+
+		/// <summary>Gets MBC type.</summary>
+		/// <returns>MBC type.</returns>
 		private static int GetMbcIndex(byte type) => type switch
 		{
 			>= 0x01 and <= 0x03 => 1,
@@ -402,6 +453,10 @@ namespace GB.Memory
 			0x22 => 7,
 			_ => 0
 		};
+
+
+		/// <summary>Gets ROM type.</summary>
+		/// <returns>ROM type.</returns>
 		public string GetRomType() => _type switch
 		{
 			0x00 => "ROM ONLY",
@@ -432,7 +487,15 @@ namespace GB.Memory
 			0xFF => "HuC1 + RAM + BATTERY",
 			_ => $"Undefined (0x{_type:X2})"
 		};
+
+
+		/// <summary>Gets publisher.</summary>
+		/// <returns>Publisher name.</returns>
 		public string GetPublisher() => (_license == 0x33) ? GetNewLicense(_newLicense) : GetOldLicense(_license);
+
+
+		/// <summary>Gets publisher from new license code.</summary>
+		/// <returns>Publisher name.</returns>
 		private static string GetNewLicense(string index) => index switch
 		{
 			"01" => "Nintendo R&D1",
@@ -499,6 +562,10 @@ namespace GB.Memory
 			"DK" => "Kodansha",
 			_ => $"Unknown New Code"
 		};
+
+
+		/// <summary>Gets publisher from old license code.</summary>
+		/// <returns>Publisher name.</returns>
 		private static string GetOldLicense(byte index) => index switch
 		{
 			0x00 => "None",

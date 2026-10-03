@@ -2,6 +2,7 @@
 
 public partial class Instructions
 {
+	/// <summary>Executes a CB instruction.</summary>
 	private void ExecuteCB()
 	{
 		byte opcode = ReadPc8();
@@ -9,7 +10,7 @@ public partial class Instructions
 		byte bit = (byte)((opcode >> 3) & 0b0000_0111);
 		byte val = Read8(reg);
 
-		if (opcode <= 0x3F)
+		if (opcode <= 0x3F) // Execute rotate or shift.
 		{
 			val = bit switch
 			{
@@ -25,28 +26,33 @@ public partial class Instructions
 			};
 			Write8(reg, val);
 		}
-		else if (opcode <= 0x7F)
+		else if (opcode <= 0x7F) // Test a bit.
 		{
 			Bit(bit, val);
 		}
-		else if (opcode <= 0xBF)
+		else if (opcode <= 0xBF) // Clear a bit.
 		{
 			val &= (byte)~(1 << bit);
 			Write8(reg, val);
 		}
-		else
+		else // Set a bit.
 		{
 			val |= (byte)(1 << bit);
 			Write8(reg, val);
 		}
 	}
 
+
+	/// <summary>Checks a bit.</summary>
 	private void Bit(int bit, byte value)
 	{
 		bool z = (value & (1 << bit)) == 0;
 		_registers.WriteFlags(z, false, true, null);
 	}
 
+
+	/// <summary>Rotates a value left.</summary>
+	/// <returns>Rotated value.</returns>
 	private byte Rlc(byte val)
 	{
 		bool c = (val & 0b1000_0000) != 0;
@@ -56,6 +62,9 @@ public partial class Instructions
 		return val;
 	}
 
+
+	/// <summary>Rotates a value right.</summary>
+	/// <returns>Rotated value.</returns>
 	private byte Rrc(byte val)
 	{
 		bool c = (val & 0b0000_0001) != 0;
@@ -65,6 +74,9 @@ public partial class Instructions
 		return val;
 	}
 
+
+	/// <summary>Rotates a value left through carry.</summary>
+	/// <returns>Rotated value.</returns>
 	private byte Rl(byte val)
 	{
 		bool c = (val & 0b1000_0000) != 0;
@@ -74,6 +86,9 @@ public partial class Instructions
 		return val;
 	}
 
+
+	/// <summary>Rotates a value right through carry.</summary>
+	/// <returns>Rotated value.</returns>
 	private byte Rr(byte val)
 	{
 		bool c = (val & 0b0000_0001) != 0;
@@ -83,6 +98,9 @@ public partial class Instructions
 		return val;
 	}
 
+
+	/// <summary>Shifts a value left.</summary>
+	/// <returns>Shifted value.</returns>
 	private byte Sla(byte val)
 	{
 		bool c = (val & 0b1000_0000) != 0;
@@ -92,6 +110,9 @@ public partial class Instructions
 		return val;
 	}
 
+
+	/// <summary>Shifts a value right while keeping the highest bit.</summary>
+	/// <returns>Shifted value.</returns>
 	private byte Sra(byte val)
 	{
 		bool c = (val & 0b0000_0001) != 0;
@@ -101,6 +122,9 @@ public partial class Instructions
 		return val;
 	}
 
+
+	/// <summary>Shifts a value right.</summary>
+	/// <returns>Shifted value.</returns>
 	private byte Srl(byte val)
 	{
 		bool c = (val & 0b0000_0001) != 0;
@@ -110,6 +134,9 @@ public partial class Instructions
 		return val;
 	}
 
+
+	/// <summary>Swaps the high and low nibbles.</summary>
+	/// <returns>Swapped value.</returns>
 	private byte Swap(byte val)
 	{
 		val = (byte)((val << 4) | (val >> 4));

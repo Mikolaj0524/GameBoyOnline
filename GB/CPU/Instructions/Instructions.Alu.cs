@@ -2,16 +2,21 @@
 
 public partial class Instructions
 {
+	/// <summary>Executes an ALU operation on a register.</summary>
 	private void AluReg(byte op, byte src)
 	{
 		byte val = Read8(src);
 		AluOp(op, val);
 	}
 
+
+	/// <summary>Executes an ALU operation with an immediate value.</summary>
 	private void AluImm(byte op) { 
 		AluOp(op, ReadPc8());
 	}
 
+
+	/// <summary>Increments an 8-bit register.</summary>
 	private void IncReg(byte index)
 	{
 		byte val = Read8(index);
@@ -21,6 +26,8 @@ public partial class Instructions
 		_registers.WriteFlags(val == 0, false, h, null);
 	}
 
+
+	/// <summary>Decrements an 8-bit register.</summary>
 	private void DecReg(byte index)
 	{
 		byte val = Read8(index);
@@ -30,6 +37,8 @@ public partial class Instructions
 		_registers.WriteFlags(val == 0, true, h, null);
 	}
 
+
+	/// <summary>Increments the value at HL.</summary>
 	private void IncHl()
 	{
 		byte val = _bus.Read8(_registers.HL);
@@ -39,6 +48,8 @@ public partial class Instructions
 		_registers.WriteFlags(val == 0, false, h, null);
 	}
 
+
+	/// <summary>Decrements the value at HL.</summary>
 	private void DecHl()
 	{
 		byte val = _bus.Read8(_registers.HL);
@@ -48,24 +59,32 @@ public partial class Instructions
 		_registers.WriteFlags(val == 0, true, h, null);
 	}
 
+
+	/// <summary>Increments a 16-bit register.</summary>
 	private void IncReg16(int index)
 	{
 		Write16(index, (ushort)(Read16(index) + 1));
 		_bus.Tick(4);
 	}
 
+
+	/// <summary>Decrements a 16-bit register.</summary>
 	private void DecReg16(int index)
 	{
 		Write16(index, (ushort)(Read16(index) - 1));
 		_bus.Tick(4);
 	}
 
+
+	/// <summary>Adds a 16-bit register to HL.</summary>
 	private void AddHlReg16(int index)
 	{
 		AddHl(Read16(index));
 		_bus.Tick(4);
 	}
 
+
+	/// <summary>Adds a signed value to SP.</summary>
 	private void AddSpE8()
 	{
 		byte val = ReadPc8();
@@ -78,6 +97,8 @@ public partial class Instructions
 		_registers.SP = (ushort)(sp + (sbyte)val);
 	}
 
+
+	/// <summary>Rotates the accumulator.</summary>
 	private void AccRot(byte opcode)
 	{
 		switch ((opcode >> 3) & 0b0000_0011)
@@ -91,6 +112,8 @@ public partial class Instructions
 		_registers.z = false;
 	}
 
+
+	/// <summary>Executes an accumulator operation.</summary>
 	private void AccMisc(byte opcode)
 	{
 		switch ((opcode >> 3) & 0b0000_0011)
@@ -114,6 +137,7 @@ public partial class Instructions
 		}
 	}
 
+	/// <summary>Adjusts the accumulator for BCD.</summary>
 	private void Daa()
 	{
 		int value = _registers.A;
@@ -142,6 +166,8 @@ public partial class Instructions
 		_registers.h = false;
 	}
 
+
+	/// <summary>Executes an ALU operation.</summary>
 	private void AluOp(byte op, byte value)
 	{
 		switch (op)
@@ -157,6 +183,8 @@ public partial class Instructions
 		}
 	}
 
+
+	/// <summary>Adds a value to the accumulator.</summary>
 	private void Add(byte value)
 	{
 		int result = _registers.A + value;
@@ -168,6 +196,8 @@ public partial class Instructions
 		_registers.A = (byte)result;
 	}
 
+
+	/// <summary>Adds a value and the carry flag to the accumulator.</summary>
 	private void Adc(byte value)
 	{
 		int carry = _registers.c ? 1 : 0;
@@ -180,6 +210,8 @@ public partial class Instructions
 		_registers.A = (byte)result;
 	}
 
+
+	/// <summary>Subtracts a value from the accumulator.</summary>
 	private void Sub(byte value)
 	{
 		int result = _registers.A - value;
@@ -191,6 +223,8 @@ public partial class Instructions
 		_registers.A = (byte)result;
 	}
 
+
+	/// <summary>Subtracts a value and the carry flag from the accumulator.</summary>
 	private void Sbc(byte value)
 	{
 		int carry = _registers.c ? 1 : 0;
@@ -203,24 +237,32 @@ public partial class Instructions
 		_registers.A = (byte)result;
 	}
 
+
+	/// <summary>Performs a bitwise AND.</summary>
 	private void And(byte value)
 	{
 		_registers.A &= value;
 		_registers.WriteFlags(_registers.A == 0, false, true, false);
 	}
 
+
+	/// <summary>Performs a bitwise XOR.</summary>
 	private void Xor(byte value)
 	{
 		_registers.A ^= value;
 		_registers.WriteFlags(_registers.A == 0, false, false, false);
 	}
 
+
+	/// <summary>Performs a bitwise OR.</summary>
 	private void Or(byte value)
 	{
 		_registers.A |= value;
 		_registers.WriteFlags(_registers.A == 0, false, false, false);
 	}
 
+
+	/// <summary>Compares a value with the accumulator.</summary>
 	private void Cp(byte value)
 	{
 		int result = _registers.A - value;
@@ -231,6 +273,8 @@ public partial class Instructions
 		_registers.c = _registers.A < value;
 	}
 
+
+	/// <summary>Adds a 16-bit value to HL.</summary>
 	private void AddHl(ushort value)
 	{
 		int result = _registers.HL + value;

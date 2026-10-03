@@ -4,8 +4,12 @@ namespace GB.Communication
 {
 	public class SerialPort : IRWInterface
 	{
+		/// <summary>Serial transfer registers.</summary>
 		public byte Stc, Stb;
 
+
+		/// <summary>Reads a serial register.</summary>
+		/// <returns>Register value.</returns>
 		public byte Read8(ushort address)
 		{
 			if (address == 0xFF01)
@@ -17,6 +21,8 @@ namespace GB.Communication
 			return 0xFF;
 		}
 
+
+		/// <summary>Writes to a serial register.</summary>
 		public void Write8(ushort address, byte value)
 		{
 			if (address == 0xFF01)

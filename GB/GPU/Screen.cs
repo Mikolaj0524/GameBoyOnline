@@ -7,8 +7,13 @@ namespace GB.GPU
 		public byte Lcdc, Bgp, Scx, Scy, Obp0, Obp1, Wy, Wx, Stat, Ly, Lyc;
 
 		private float _contrast = 0.5f;
+
+
+		/// <summary>Screen color palette.</summary>
 		public readonly byte[][] Palette = new byte[4][];
 
+
+		/// <summary>Screen contrast.</summary>
 		public float Contrast
 		{
 			get => _contrast;
@@ -19,6 +24,8 @@ namespace GB.GPU
 			}
 		}
 
+
+		/// <summary>Updates the screen palette.</summary>
 		public void UpdatePalette()
 		{
 			byte[][] defaultPalette = [
@@ -39,6 +46,7 @@ namespace GB.GPU
 		}
 
 		public Screen() => UpdatePalette();
+
 		public byte Read8(ushort address) => address switch
 		{
 			0xFF40 => Lcdc,

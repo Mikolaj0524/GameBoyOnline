@@ -10,12 +10,16 @@ namespace GB.WinForms
 		[STAThread]
 		static void Main()
 		{
+			// Open a console window.
 			AllocConsole();
 			ApplicationConfiguration.Initialize();
 
-			GameBoy gameBoy = new();
-			byte[] bios = File.ReadAllBytes("bios.gb");
 
+			// Create Game Boy emulator.
+			GameBoy gameBoy = new();
+
+			// Load BIOS and ROM.
+			byte[] bios = File.ReadAllBytes("bios.gb");
 			gameBoy.SetBios(bios);
 
 			byte[] rom = File.ReadAllBytes("tests.gb");
@@ -23,6 +27,7 @@ namespace GB.WinForms
 
 			var window = new Form1(gameBoy);
 
+			// Run emulator
 			if (!gameBoy.Run())
 			{
 				Application.Exit();
