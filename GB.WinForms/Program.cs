@@ -22,7 +22,7 @@ namespace GB.WinForms
 			byte[] bios = File.ReadAllBytes("bios.gb");
 			gameBoy.SetBios(bios);
 
-			byte[] rom = File.ReadAllBytes("camera.gb");
+			byte[] rom = File.ReadAllBytes("tests.gb");
 			gameBoy.SetCartridge(rom);
 
 			var window = new Form1(gameBoy);
