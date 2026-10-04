@@ -12,6 +12,7 @@
 			>= 0x19 and <= 0x1E => new MBC5(rom, ram, romBanks, ramBanks),
 			0x20 => new MBC6(rom, ram, romBanks, ramBanks),
 			0x22 => new MBC7(rom, ram, romBanks, ramBanks),
+			0xFC => new MBCCamera(rom, ram, romBanks, ramBanks),
 			_ => new NoMBC(rom, ram, romBanks, ramBanks)
 		};
 	}
