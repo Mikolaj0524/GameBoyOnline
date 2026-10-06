@@ -1,16 +1,15 @@
-﻿using GB.Interfaces;
+﻿using GB.CPU;
+using GB.Interfaces;
 using GB.Utils;
 
 namespace GB.Controls
 {
-	public class Joypad : IRWInterface
+	public class Joypad(InterruptController interruptController) : IRWInterface
 	{
 		/// <summary>Button selection and button states.</summary>
 		private byte _select = 0b0011_0000, _action = 0b0000_1111, _cross = 0b0000_1111;
 
-		/// <summary>Called when a button interrupt is requested.</summary>
-		public Action? RequestInterrupt;
-
+		private readonly InterruptController _interruptController = interruptController;
 
 		/// <summary>Reads the joypad state.</summary>
 		/// <returns>Joypad state.</returns>
@@ -75,7 +74,7 @@ namespace GB.Controls
 
 				// Request an interrupt when the button is pressed.
 				if (prev)
-					RequestInterrupt?.Invoke();
+					_interruptController.SetInterrupt(Interrupt.Joypad);
 			}
 			else
 			{

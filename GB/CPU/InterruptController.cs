@@ -20,7 +20,12 @@ namespace GB.CPU
 
 
 		/// <summary>Requests an interrupt.</summary>
-		public void SetInterrupt(Interrupt i) => IF |= _interrupts[i].mask;
+		public void SetInterrupt(Interrupt i)
+		{
+			Console.WriteLine($"[INT] {i}, IF before: {IF:X2}");
+			IF |= _interrupts[i].mask;
+			Console.WriteLine($"[INT] {i}, IF after: {IF:X2}");
+		}
 
 
 		/// <summary>Gets pending interrupts.</summary>

@@ -1,11 +1,17 @@
-﻿using GB.Interfaces;
+﻿using GB.CPU;
+using GB.Interfaces;
 
 namespace GB.Communication
 {
-	public class SerialPort : IRWInterface
+	public class SerialPort(InterruptController interruptController) : IRWInterface
 	{
+		private readonly InterruptController _interruptController = interruptController;
+
 		/// <summary>Serial transfer registers.</summary>
 		public byte Stc, Stb;
+
+		private bool _transferring;
+		private int _counter;
 
 
 		/// <summary>Reads a serial register.</summary>
@@ -16,7 +22,7 @@ namespace GB.Communication
 				return Stb;
 
 			if (address == 0xFF02)
-				return Stc;
+				return (byte)(Stc | 0b0111_1110);
 
 			return 0xFF;
 		}
@@ -31,15 +37,30 @@ namespace GB.Communication
 				return;
 			}
 
-			if (address == 0xFF02)
-			{
+			if (address == 0xFF02) {
 				Stc = value;
-				if ((value & 0b1000_0000) != 0)
+
+				if ((value & 0b1000_0001) == 0b1000_0001)
 				{
 					Console.Write((char)Stb);
-					Stc &= 0b0111_1111;
+					_transferring = true;
+					_counter = 8192;
 				}
+			}
+		}
+
+		public void Step(int cycles)
+		{
+			if (!_transferring)
 				return;
+
+			_counter -= cycles;
+			if (_counter <= 0)
+			{
+				_transferring = false;
+				Stb = 0xFF;
+				Stc &= 0b0111_1111;
+				_interruptController.SetInterrupt(Interrupt.Serial);
 			}
 		}
 	}

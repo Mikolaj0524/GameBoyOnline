@@ -1,6 +1,5 @@
 ﻿using GB.Audio;
 using GB.Controls;
-using GB.CPU;
 using GB.GPU;
 using GB.Interfaces;
 using GB.Memory;
@@ -11,9 +10,9 @@ namespace GB.Communication
 	{
 		public Screen Screen = new();
 		public Timers.Timer Timer;
-		public Joypad Joypad = new();
+		public Joypad Joypad;
 		public APU Apu;
-		public SerialPort SerialPort = new();
+		public SerialPort SerialPort;
 		public WaveRAM WaveRam = new();
 		public PPU Ppu;
 		public BUS Bus;
@@ -23,8 +22,9 @@ namespace GB.Communication
 		public IO(BUS bus) {
 			Bus = bus;
 
-			Joypad.RequestInterrupt = () => Bus.InterruptController.SetInterrupt(Interrupt.Joypad);
+			Joypad = new Joypad(bus.InterruptController);
 			Timer = new Timers.Timer(bus.InterruptController);
+			SerialPort = new SerialPort(bus.InterruptController);
 
 			Dma = new DMA(bus);
 			Ppu = new PPU(this);
@@ -129,6 +129,7 @@ namespace GB.Communication
 		{
 			Timer.Step(cycles);
 			Ppu.Step(cycles);
+			SerialPort.Step(cycles);
 			Apu.Step(cycles);
 		}
 	}
