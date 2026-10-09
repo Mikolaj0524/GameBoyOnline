@@ -176,5 +176,20 @@ namespace GB.WASM
 			var interrupts = _gameBoy.Bus.InterruptController;
 			return [interrupts.IE, interrupts.IF];
 		}
+
+		[JSExport]
+		public static byte[] GetSaveRam()
+		{
+			return _gameBoy?.Bus.Cartridge?.SaveRam();
+		}
+
+		[JSExport]
+		public static void LoadSaveRam(byte[] saveData)
+		{
+			if (_gameBoy == null || saveData == null)
+				return;
+
+			_gameBoy?.Bus.Cartridge?.LoadRam(saveData);
+		}
 	}
 }

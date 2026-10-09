@@ -1,4 +1,5 @@
 <Solution>
+	<Project Path="GB.Backend/GB.Backend.csproj" Id="39aae0e7-b692-491a-b47f-4657400f0e36" />
 	<Project Path="GB.Frontend/GB.Frontend.esproj">
 		<Build />
 		<Deploy />

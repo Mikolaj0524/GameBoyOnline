@@ -32,7 +32,7 @@ namespace GB.Memory
 
 
 		// Header variables
-		private byte _type, _romSize, _ramSize, _license;
+		private byte _type, _romize, _ramSize, _license;
 		private string _newLicense = "00";
 		private int _romBanks = 2, _ramBanks = 0;
 
@@ -53,7 +53,7 @@ namespace GB.Memory
 			Title = Encoding.ASCII.GetString(_rom, 0x0134, 16).TrimEnd('\0');
 
 			_type = _rom[0x0147];
-			_romSize = _rom[0x0148];
+			_romize = _rom[0x0148];
 			_ramSize = _rom[0x0149];
 			_license = _rom[0x014B];
 			Version = _rom[0x014C];
@@ -61,7 +61,7 @@ namespace GB.Memory
 
 			HasBattery = _type == 0x03 || _type == 0x06 || _type == 0x09 || _type == 0x0D || _type == 0x0F || _type == 0x10 || _type == 0x13 || _type == 0x1B || _type == 0x1E || _type == 0x22 || _type == 0xFF;
 
-			_romBanks = Math.Max(2, _romSize <= 8 ? 2 << _romSize : 2);
+			_romBanks = Math.Max(2, _romize <= 8 ? 2 << _romize : 2);
 			int ramBytes = _ramSize switch
 			{
 				0x01 => 2 * 1024,
