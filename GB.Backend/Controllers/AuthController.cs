@@ -13,6 +13,9 @@ namespace GB.Backend.Controllers
 		private readonly IConfiguration _configuration = configuration;
 		private readonly IMemoryCache _cache = cache;
 
+		/// <summary> Generates a temporary authentication challenge. </summary>
+		/// <returns> The generated challenge. </returns>
+
 		[HttpPost("challenge")]
 		public IActionResult GetChallenge()
 		{
@@ -27,6 +30,9 @@ namespace GB.Backend.Controllers
 			});
 		}
 
+
+		/// <summary> Verifies response and generates access token. </summary>
+		/// <returns> Token if true </returns>
 		[HttpPost("verify")]
 		public IActionResult Verify([FromBody] VerifyRequestDto request)
 		{
@@ -80,6 +86,8 @@ namespace GB.Backend.Controllers
 			}
 		}
 
+		/// <summary> Validates the authentication token. </summary>
+		/// <returns> Is token valid </returns>
 		[HttpGet("validate")]
 		public IActionResult Validate()
 		{
