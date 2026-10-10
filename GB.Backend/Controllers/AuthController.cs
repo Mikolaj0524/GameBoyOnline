@@ -1,4 +1,5 @@
-﻿using GB.Backend.Dtos;
+﻿
+using GB.Backend.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using System.Security.Cryptography;
@@ -13,26 +14,18 @@ namespace GB.Backend.Controllers
 		private readonly IConfiguration _configuration = configuration;
 		private readonly IMemoryCache _cache = cache;
 
-		/// <summary> Generates a temporary authentication challenge. </summary>
-		/// <returns> The generated challenge. </returns>
-
+		/// <summary>Generates a temporary authentication challenge.</summary>
+		/// <returns>The generated challenge.</returns>
 		[HttpPost("challenge")]
 		public IActionResult GetChallenge()
 		{
-			byte[] challengeBytes = RandomNumberGenerator.GetBytes(32);
-			string challenge = Convert.ToBase64String(challengeBytes);
-
+			string challenge = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
 			_cache.Set($"challenge:{challenge}", true, TimeSpan.FromMinutes(2));
-
-			return Ok(new
-			{
-				challenge
-			});
+			return Ok(new { challenge });
 		}
 
-
-		/// <summary> Verifies response and generates access token. </summary>
-		/// <returns> Token if true </returns>
+		/// <summary>Verifies the response and generates an access token.</summary>
+		/// <returns>A token with the assigned access role.</returns>
 		[HttpPost("verify")]
 		public IActionResult Verify([FromBody] VerifyRequestDto request)
 		{
@@ -40,42 +33,36 @@ namespace GB.Backend.Controllers
 				return BadRequest();
 
 			string challengeKey = $"challenge:{request.Challenge}";
-
 			if (!_cache.TryGetValue(challengeKey, out _))
 				return Unauthorized();
 
 			_cache.Remove(challengeKey);
 
-			string[]? codes = _configuration.GetSection("AccessCodes").Get<string[]>();
+			var keys = _configuration.GetSection("AccessKeys").Get<List<AccessKeyConfig>>();
 
-			if (codes == null || codes.Length == 0)
-				return StatusCode(500);
+			if (keys == null || keys.Count == 0)
+				return StatusCode(500, "No access keys configured.");
 
 			try
 			{
 				byte[] challenge = Convert.FromBase64String(request.Challenge);
 				byte[] received = Convert.FromBase64String(request.Response);
 
-				foreach (string code in codes)
+				foreach (var key in keys)
 				{
-					byte[] key = Encoding.UTF8.GetBytes(code);
-
-					using var hmac = new HMACSHA256(key);
-
-					byte[] expected = hmac.ComputeHash(challenge);
-
-					if (!CryptographicOperations.FixedTimeEquals(expected, received))
+					if (string.IsNullOrWhiteSpace(key.Code) || (key.Role != "Normal" && key.Role != "Special"))
 						continue;
 
-					byte[] tokenBytes = RandomNumberGenerator.GetBytes(32);
-					string token = Convert.ToBase64String(tokenBytes);
+					using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(key.Code));
+					byte[] expected = hmac.ComputeHash(challenge);
 
-					_cache.Set($"token:{token}", true, TimeSpan.FromMinutes(15));
+					if (received.Length != expected.Length || !CryptographicOperations.FixedTimeEquals(expected, received))
+						continue;
 
-					return Ok(new
-					{
-						token
-					});
+					string token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+					_cache.Set($"token:{token}", key.Role, TimeSpan.FromMinutes(15));
+
+					return Ok(new { token, role = key.Role });
 				}
 
 				return Unauthorized();
@@ -86,28 +73,35 @@ namespace GB.Backend.Controllers
 			}
 		}
 
-		/// <summary> Validates the authentication token. </summary>
-		/// <returns> Is token valid </returns>
+		/// <summary>Validates the authentication token.</summary>
+		/// <returns>The token role if valid.</returns>
 		[HttpGet("validate")]
 		public IActionResult Validate()
 		{
-			string? authorization = Request.Headers.Authorization.ToString();
-
-			if (string.IsNullOrWhiteSpace(authorization))
-				return Unauthorized();
-
-			if (!authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-				return Unauthorized();
-
-			string token = authorization["Bearer ".Length..].Trim();
-
-			if (string.IsNullOrWhiteSpace(token))
-				return Unauthorized();
-
-			if (!_cache.TryGetValue($"token:{token}", out _))
-				return Unauthorized();
-
-			return Ok();
+			string? role = GetTokenRole();
+			return role == null ? Unauthorized() : Ok(new { role });
 		}
+
+		/// <summary>Returns the role assigned to the Bearer token.</summary>
+		private string? GetTokenRole()
+		{
+			string auth = Request.Headers.Authorization.ToString();
+
+			if (!auth.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+				return null;
+
+			string token = auth["Bearer ".Length..].Trim();
+
+			if (token.Length == 0 || !_cache.TryGetValue($"token:{token}", out string? role))
+				return null;
+
+			return role;
+		}
+	}
+
+	public class AccessKeyConfig
+	{
+		public string Code { get; set; } = "";
+		public string Role { get; set; } = "Normal";
 	}
 }
