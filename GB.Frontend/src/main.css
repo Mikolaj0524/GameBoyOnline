@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+:root{
+    color-scheme: dark;
+}
+
+::-webkit-scrollbar{
+    border-radius: 10px;
+    width: 10px;
+}
+
+::-webkit-scrollbar-thumb{
+    border-radius: 10px;
+    cursor: pointer;
+}
