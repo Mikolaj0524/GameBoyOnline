@@ -274,7 +274,7 @@ export default function Emulator({ memory, setStatus }) {
         <EmulatorContext.Provider value={{gameboyRef, runtimeRef}}>
             <div className={`w-full flex flex-col ${fullscreen ? "w-11/12" : "sm:w-11/12 md:w-3/4 lg:w-1/3"}`}>
                 <div className="relative">
-                    <div className={`relative ${fullscreen ? "absolute left-1/2 top-1/2 -translate-x-1/2 w-full aspect-10/9" : "w-full aspect-10/9"}`}>
+                    <div className={`relative ${fullscreen ? "absolute left-1/2 top-1/2 -translate-x-1/2 max-h-[90dvh] aspect-10/9" : "w-full aspect-10/9"}`}>
                         <canvas ref={canvasRef} width={160} height={144} className="[image-rendering:pixelated] w-full h-full border border-white/10 rounded-sm" />
                         <button type="button" className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-black/80 backdrop-blur-md border border-white/10 rounded-sm text-neutral-300 hover:text-white cursor-pointer flex items-center justify-center" onClick={() => setFullscreen((p) => !p)}>
                             <svg xmlns="http://www.w3.org/2000/svg" className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
